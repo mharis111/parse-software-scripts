@@ -5,7 +5,6 @@ Copyright (c) 2016 Suhas S G <jargnar@gmail.com>
 '''
 import ast
 from collections import deque
-res = []
 
 class FuncCallVisitor(ast.NodeVisitor):
     def __init__(self):
@@ -29,7 +28,7 @@ def get_func_defs(tree):
     callvisitor = FuncCallVisitor()
     for node in ast.walk(tree):
         if isinstance(node, ast.FunctionDef):
-            func_calls.append(callvisitor.name)
+            func_calls.append({'line': node.lineno, 'def': node.name})
     return func_calls
 
 def parse_functions_defs(code):
