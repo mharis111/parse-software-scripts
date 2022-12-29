@@ -5,45 +5,56 @@ Copyright (c) 2016 Suhas S G <jargnar@gmail.com>
 '''
 import ast
 from collections import deque
-res = []
 
 class AssignValuesVisitor(ast.NodeVisitor):
     def __init__(self):
-        self._name = deque()
+        self._name = ''
 
 
     @property
     def name(self):
-        return '.'.join(self._name)
+        return self._name
 
     @name.deleter
     def name(self):
         self._name.clear()
 
     def visit_Name(self, node):
-        self._name.appendleft(node.id)
-        res.append({'line': node.lineno, 'value': node.id})
+        self._name = {'line': node.lineno, 'value': node.id}
+        self.generic_visit(node)
         
     def visit_Constant(self, node):
-        print(self)
-        print(node.end_lineno)
-        res.append({'line': node.lineno, 'value': node.s})
+        self._name = {'line': node.lineno, 'value': node.s}
         self.generic_visit(node)
+        
+    def visit_Attribute(self, node):
+        try:
+            self._name = {'line': node.lineno, 'value': node.value.id+"."+node.attr}
+        except AttributeError:
+            pass
 
-def get_func_calls(tree):
+def get_assign_values(tree):
+    assignvaluesvisitor = AssignValuesVisitor()
+    assign_values = []
     for node in ast.walk(tree):
         if isinstance(node, ast.Assign):
-            assignvaluesvisitor = AssignValuesVisitor()
             if isinstance(node.value, ast.Name):
                 assignvaluesvisitor.visit(node.value)
-            elif isinstance(node.value, ast.Constant):
+                assign_values.append(assignvaluesvisitor.name)
+            if isinstance(node.value, ast.Constant):
                 assignvaluesvisitor.visit(node.value)
+                assign_values.append(assignvaluesvisitor.name)
+            if isinstance(node.value, ast.Attribute):
+                assignvaluesvisitor.visit(node.value)
+                assign_values.append(assignvaluesvisitor.name)
             if isinstance(node.value, ast.Subscript):
                 assignvaluesvisitor.visit(node.value)
-            elif isinstance(node.value, ast.BinOp):
+                assign_values.append(assignvaluesvisitor.name)
+            if isinstance(node.value, ast.BinOp):
                 assignvaluesvisitor.visit(node.value)
+                assign_values.append(assignvaluesvisitor.name)
+    return assign_values
 
 def parse_assign_values(code):
     tree = ast.parse(code)
-    get_func_calls(tree)
-    return res
+    return get_assign_values(tree)

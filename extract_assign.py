@@ -5,37 +5,38 @@ Copyright (c) 2016 Suhas S G <jargnar@gmail.com>
 '''
 import ast
 from collections import deque
-res = []
 
 class AssignVisitor(ast.NodeVisitor):
     def __init__(self):
-        self._name = deque()
+        self._name = ''
 
 
     @property
     def name(self):
-        return '.'.join(self._name)
+        return self._name
 
     @name.deleter
     def name(self):
         self._name.clear()
 
     def visit_Name(self, node):
-        self._name.appendleft(node.id)
-        res.append({'line': node.lineno, 'target': node.id})
+        self._name = {'line': node.lineno, 'target': node.id}
 
-def get_func_calls(tree):
+def get_assign_variables(tree):
+    assign_variables = []
+    assignvisitor = AssignVisitor()
     for node in ast.walk(tree):
         if isinstance(node, ast.Assign):
-            assignvisitor = AssignVisitor()
             for t in node.targets:
                 if isinstance(t, ast.Tuple):
                     for elt in t.elts:
                         assignvisitor.visit(elt)
+                        assign_variables.append(assignvisitor.name)
                 else:
                     assignvisitor.visit(t)
+                    assign_variables.append(assignvisitor.name)
+    return assign_variables
 
 def parse_assign_variables(code):
     tree = ast.parse(code)
-    get_func_calls(tree)
-    return res
+    return get_assign_variables(tree)
