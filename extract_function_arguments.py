@@ -1,8 +1,4 @@
-'''
-Get all function calls from a python file
-The MIT License (MIT)
-Copyright (c) 2016 Suhas S G <jargnar@gmail.com>
-'''
+
 import ast
 from collections import deque
 
@@ -23,8 +19,9 @@ class AssignVisitor(ast.NodeVisitor):
         self._name = {'line': node.lineno, 'value': node.id} 
         
     def visit_Constant(self, node):
+        print(node)
         self._name = {'line': node.lineno, 'value': node.s}
-        self.generic_visit(node)
+        #self.generic_visit(node)
 
 def get_func_calls(tree):
     func_arguments = []
@@ -32,10 +29,18 @@ def get_func_calls(tree):
     for node in ast.walk(tree):
         if isinstance(node, ast.Call):
             for t in node.args:
-                assignvisitor.visit(t)
-                func_arguments.append(assignvisitor.name)
+                if isinstance(t, ast.BinOp):
+                    print("rrrrrrrrrrrr")
+                    assignvisitor.visit(t.left)
+                    func_arguments.append(assignvisitor.name)
+                    assignvisitor.visit(t.right)
+                    func_arguments.append(assignvisitor.name)
+                else:
+                    assignvisitor.visit(t)
+                    func_arguments.append(assignvisitor.name)
     return func_arguments
 
 def parse_function_arguments(code):
     tree = ast.parse(code)
+    print(ast.dump(tree, indent=4))
     return get_func_calls(tree) 

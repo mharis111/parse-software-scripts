@@ -1,8 +1,4 @@
-'''
-Get all function calls from a python file
-The MIT License (MIT)
-Copyright (c) 2016 Suhas S G <jargnar@gmail.com>
-'''
+
 import ast
 from collections import deque
 
@@ -35,10 +31,6 @@ def get_func_calls(tree):
         if isinstance(node, ast.Call):
             callvisitor.visit(node.func)
             func_calls.append(callvisitor.name)
-        if isinstance(node, ast.FunctionDef):
-            #res.append({'line': node.lineno, 'operation': node.name})
-            func_calls.append({'line': node.lineno, 'operation': node.name})
-    print(func_calls)
     return func_calls
 
 def parse_functions(code):

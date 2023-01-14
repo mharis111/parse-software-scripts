@@ -1,8 +1,3 @@
-"""
-All the methods were generated based on the list of nodes from the
-"Green Tree Snakes" guide:
-https://greentreesnakes.readthedocs.io/en/latest/index.html
-"""
 
 import ast
 from extract_functions import parse_functions
@@ -11,8 +6,6 @@ from extract_assign import parse_assign_variables
 from extract_function_arguments import parse_function_arguments
 from extract_assign_values import parse_assign_values
 import numpy as np
-
-res=[]
 
 def create_list(code, parameter, combined_result):
     line_visited = []
@@ -50,8 +43,8 @@ def combine_parsed_data(function_nodes, functions_defs, assign_nodes, argument_n
     #create_list(argument_nodes, "value")
     #create_list(value_nodes, "value")
     
-    for line in sorted(combined_result.keys()):
-        print(line, combined_result[line])
+    #for line in sorted(combined_result.keys()):
+        #print(line, combined_result[line])
     return combined_result
 
 def parse_ast(code):
@@ -61,17 +54,17 @@ def parse_ast(code):
     arguments = parse_function_arguments(code)
     values = parse_assign_values(code)
     
-    #print("function")
-    #print(functions)
-    #print("assign")
-    #print(assign)
-    #print("argument")
-    #print(arguments)
-    #print("value")
-    #print(values)
-    #print("functions defs")
-    #print(functions_defs)
+    print("function")
+    print(functions)
+    print("assign")
+    print(assign)
+    print("argument")
+    print(arguments)
+    print("value")
+    print(values)
+    print("functions defs")
+    print(functions_defs)
     
-    combine_parsed_data(functions, functions_defs , assign, arguments, values)
+    return combine_parsed_data(functions, functions_defs , assign, arguments, values)
     #print(combined_result)
     
