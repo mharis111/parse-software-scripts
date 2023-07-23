@@ -1,8 +1,6 @@
 import pathlib
 import pandas as pd
 
-functions = []
-
 
 def search_array(value, array):
     if type(value)==list:
@@ -57,14 +55,14 @@ def is_valid_file(line):
 
 
 def find_input_dataset(code_line):
-    if 'loadtxt' in str(code_line['operation']) or 'read_csv' in str(code_line['operation']) or ('open' in str(code_line['operation']) and 'r' in code_line['value'] ):
+    if 'loadtxt' in str(code_line['operation']) or 'read_csv' in str(code_line['operation']) or 'genfromtxt' in str(code_line['operation']) or ('open' in str(code_line['operation']) and 'r' in code_line['value'] ):
         return True
     else:
         return False
 
 
 def find_output_dataset(code_line):
-    if ('open' in str(code_line['operation']) and 'a' in code_line['value']) or 'to_csv' in str(code_line['operation']):
+    if ('open' in str(code_line['operation']) and 'a' in code_line['value']) or 'savetxt' in str(code_line['operation']) or 'to_csv' in str(code_line['operation']):
         return True
     else:
         return False
@@ -77,7 +75,27 @@ def is_assignment_variable(variable, keys, code):
                     return True
     return False
 
-
+def post_processing(array, code=[]):
+    new_array=[]
+    for v in array:
+        if ',' in v:
+            t=v.split(",")
+            print(t)
+            for t1 in t:
+                new_array.append(t1)
+        else:
+            new_array.append(v)
+            print(v)
+    if len(code)==0:
+        return new_array
+    else:
+        for line, info in sorted(code.items()):
+            if 'target' in info:
+                for v in info['target']:
+                    if v in new_array:
+                        new_array.remove(v)
+    return new_array
+        
 def analyze_code(structured_code):
     operation_variables = []
     file_variable = ''
@@ -177,29 +195,29 @@ def extract_datasets(code):
                 print('input file name', code[line]['value'])
                 if 'target' in code[line]:
                     print('target', code[line]['target'])
-                    functions.append({'line': line, 'op': ''.join(code[line]['target'])})
-                    input_data.append(''.join(code[line]['operation']))
-                    input_files.append(''.join(code[line]['value']))
+                    functions.append({'line': line, 'op': ','.join(code[line]['target'])})
+                    input_data.append(','.join(code[line]['operation']))
+                    input_files.append(','.join(code[line]['value']))
             elif find_output_dataset(code[line]):
                 print('output file name', code[line]['value'])
-                output_data.append(''.join(code[line]['operation']))
-                output_files.append(''.join(code[line]['value']))
+                output_data.append(','.join(code[line]['operation']))
+                output_files.append(','.join(code[line]['value']))
                                    
     for line in sorted_code:
         if 'operation' in code[line]:
             if find_operation_on_variable(code[line]['operation'], functions):
                 if 'operation' in code[line]:
                     print('operation', code[line]['operation'])
-                    functions.append({'line': line, 'op': ''.join(code[line]['operation'])})
+                    functions.append({'line': line, 'op': ','.join(code[line]['operation'])})
                 if 'target' in code[line]:
-                    functions.append({'line': line, 'op': ''.join(code[line]['target'])})
+                    functions.append({'line': line, 'op': ','.join(code[line]['target'])})
         
         if 'value' in code[line]:
             if find_operation_on_variable(code[line]['value'], functions):
                 if 'operation' in code[line]:
-                    functions.append({'line': line, 'op': ''.join(code[line]['operation'])})
+                    functions.append({'line': line, 'op': ','.join(code[line]['operation'])})
                 if 'target' in code[line]:
-                    functions.append({'line': line, 'op': ''.join(code[line]['target'])})
+                    functions.append({'line': line, 'op': ','.join(code[line]['target'])})
     print(functions)
     temp = []
     for f in functions:
@@ -211,9 +229,9 @@ def extract_datasets(code):
         if 'target' in code[line]:
             if find_operation_on_variable(code[line]['target'], temp):
                 if 'operation' in code[line]:
-                    functions.append({'line': line, 'op': ''.join(code[line]['operation'])})
+                    functions.append({'line': line, 'op': ','.join(code[line]['operation'])})
             
-    functions = sorted(functions, key = lambda x : x["line"], reverse= False)
+    #functions = sorted(functions, key = lambda x : x["line"], reverse= False)
     temp = []
     print(input_data)
     print(output_data)
@@ -221,8 +239,10 @@ def extract_datasets(code):
         if f['op'] not in temp and not is_assignment_variable(f['op'], sorted_code, code) and f['op'] not in input_data and f['op'] not in output_data:
         #if f['op'] not in temp:
             temp.append(f['op'])
-            
+    print(input_files)  
     print(temp)
+    print(output_files)
+    return {'input_files': post_processing(input_files), 'operations': post_processing(temp, code), 'output_files': post_processing(output_files)}
             
             
     

@@ -34,6 +34,8 @@ def get_assign_values(tree):
     assign_values = []
     for node in ast.walk(tree):
         if isinstance(node, ast.Assign):
+            print("rrrrrrrrrrrr")
+            print(tree)
             if isinstance(node.value, ast.Name):
                 assignvaluesvisitor.visit(node.value)
                 assign_values.append(assignvaluesvisitor.name)
@@ -44,8 +46,10 @@ def get_assign_values(tree):
                 assignvaluesvisitor.visit(node.value)
                 assign_values.append(assignvaluesvisitor.name)
             if isinstance(node.value, ast.Subscript):
-                assignvaluesvisitor.visit(node.value)
-                assign_values.append(assignvaluesvisitor.name)
+                for subnode in ast.walk(node.value):
+                    if isinstance(subnode, ast.Name):
+                        assignvaluesvisitor.visit(subnode)
+                        assign_values.append(assignvaluesvisitor.name)
             if isinstance(node.value, ast.BinOp):
                 assignvaluesvisitor.visit(node.value)
                 assign_values.append(assignvaluesvisitor.name)

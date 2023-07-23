@@ -19,7 +19,6 @@ class AssignVisitor(ast.NodeVisitor):
         self._name = {'line': node.lineno, 'value': node.id} 
         
     def visit_Constant(self, node):
-        print(node)
         self._name = {'line': node.lineno, 'value': node.s}
         #self.generic_visit(node)
 
@@ -30,7 +29,6 @@ def get_func_calls(tree):
         if isinstance(node, ast.Call):
             for t in node.args:
                 if isinstance(t, ast.BinOp):
-                    print("rrrrrrrrrrrr")
                     assignvisitor.visit(t.left)
                     func_arguments.append(assignvisitor.name)
                     assignvisitor.visit(t.right)
@@ -42,5 +40,5 @@ def get_func_calls(tree):
 
 def parse_function_arguments(code):
     tree = ast.parse(code)
-    print(ast.dump(tree, indent=4))
+    #print(ast.dump(tree, indent=4))
     return get_func_calls(tree) 

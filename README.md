@@ -1,1 +1,0 @@
-# parse-software-scripts
