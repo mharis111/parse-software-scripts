@@ -11,3 +11,5 @@ An ```ACCESS_TOKEN``` needs to set before accessing zenodo REST API which can be
 **read_code.py** reads the all software packages and after extracting, parse each .py and .ipynb file one by one and returns the information about used datasets and operations performed on these datasets.
 
 **verifydataset** implements two functions ```download_pdfs``` and ```read_extracted_data```. ```download_pdfs``` downloads the pdfs of articles to make data searching process easy. ```read_extracted_data``` reads the astData and text from pdf and search the datasets and operations informtion in article text.
+
+**validation** file shows the different between the data extracted manually and using AST approach. The files shows the comparison of information retrieved from different scripts, whereas in paper information of 2 scripts is shown due to space.
