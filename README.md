@@ -1,6 +1,6 @@
 # Parse Software Scripts
 
-Providing the functionality to parse Python-based scripts extracted from Zenodo.
+Providing the functionality to parse Python-based scripts extracted from zenodo and figshare.
 
 ### Usage
 
