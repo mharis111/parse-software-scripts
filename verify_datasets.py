@@ -322,13 +322,8 @@ def get_all_pdfs(doi):
                 f=open(file_name, 'wb')
                 f.write(file.content)
                 break
-        #file_name='paper-pdfs/'+doi.replace('/', '')+'.pdf'
-        #os.rename('paper-pdfs/temp.pdf', file_name)
     
-    print('-----') 
-    #return None
-    
-def search_scholarly_knowledge():
+def download_pdfs():
     #extracted_data=read_extracted_data()
     with open('softwareData.csv', 'r', encoding="ISO-8859-1") as my_file:
         csv_dict_reader = DictReader(my_file)
@@ -359,7 +354,7 @@ def search_scholarly_knowledge():
                             print('original doi', doi)
                             if not is_file_exist(doi):
                                 get_all_pdfs(doi)
-                            print("-------") 
+                            
                     
     print(count)
     print(oa)
@@ -376,16 +371,6 @@ def is_file_exist_in_directory(path, file_name):
             print(tail)
             return True
     return False
-    
-
-#for file_name in list(set(data['input_files'])): 
-#                extension=get_file_extension(file_name)
-#                if extension !='' and file_name not in temp:
-                    #print(file_name)
-#                    temp.append(file_name)
-                    #extracted_data[i['doi']] = data
-#                    if is_file_exist_in_directory(i['file_name'], file_name):
-#                        count=count+1
 
 
 def extract_scholarly_knowledge(doi_list, extracted_data):
@@ -460,7 +445,7 @@ def validate_doi(doi):
 
 def read_software_metadata():
     extracted_data={}
-    with open('softwareDataa.csv', 'r', encoding="ISO-8859-1") as my_file:
+    with open('softwareData.csv', 'r', encoding="ISO-8859-1") as my_file:
         csv_dict_reader = DictReader(my_file)
         count = 0
         visited_doi = []
@@ -500,45 +485,12 @@ def read_parsed_data():
             data = ast.literal_eval(i['data'])
             
         
-        
-
-def read_software_data():
-    files=glob.glob('datasets\*.csv')
-    count=0
-    res = []
-    for name in files:
-        df = pd.read_csv(name, header=None, usecols=[0,1,2,3])
-        df = df.astype("string")
-        #print(os.path.splitext(name))
-        data=''
-        for v in df[2]:
-            data = ast.literal_eval(v)
-            #for data in ast.literal_eval(v):
-                #print(data)
-        for v in df[1]:
-            p = v.split("/")[0]
-            #print(os.path.isdir('temp'+'/'+p))
-            for dirpath, dirnames, filenames in os.walk(('temp'+'/'+p)):
-                for d in data:
-                    head, tail = os.path.split(d)
-                    if tail in filenames:
-                    #result.append(os.path.join(root, filename))
-                        print(tail)
-                        res.append(d)
-                        count=count+1
-    print(len(list(set(res))))
-        
             
             
 def main():
-    #read_software_metadata()
+    download_pdfs()
     #read_extracted_data()
-    search_scholarly_knowledge()
-    #pdf_info = {'pdf_url':{"https://arxiv.org/pdf/1603.06212.pdf"}}
-    #search_terms_in_pdf(pdf_info, '', ['KNeighborsClassifier'])
-    #read_extracted_data()
-    #is_file_exist_in_directory('temp/JuliaDynamics-RecurrenceAnalysis.jl-7a2acc8/benchmarks/benchmark_rqa.py', 'rossler.txt')
-    #is_article_open_access()
+    
 
 
 if __name__ == "__main__":
